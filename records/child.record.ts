@@ -1,11 +1,14 @@
 import {pool} from "../utils/db";
 import {ValidationError} from "../utils/errors";
 import {v4 as uuid} from "uuid";
+import {FieldPacket} from "mysql2";
+
+type ChildRecordResults = [ChildRecord[], FieldPacket[]];
 
 export class ChildRecord {
-    id?: string;
-    name: string;
-    giftId: string;
+    public id?: string;
+    public name: string;
+    public giftId: string;
 
     constructor(obj: ChildRecord) {
         if (!obj.name || obj.name.length < 3 || obj.name.length > 25) {
@@ -17,7 +20,7 @@ export class ChildRecord {
         this.giftId = obj.giftId;
     }
 
-    async insert() {
+    async insert(): Promise<string> {
         if (!this.id) {
             this.id = uuid();
         }
@@ -30,8 +33,8 @@ export class ChildRecord {
         return this.id;
     }
 
-    static async listAll() {
-        const [results] = await pool.execute("SELECT * FROM `children` ORDER BY `name` ASC");
+    static async listAll(): Promise<ChildRecord[]> {
+        const [results] = (await pool.execute("SELECT * FROM `children` ORDER BY `name` ASC")) as ;
         return results.map(obj => new ChildRecord(obj));
     }
 
