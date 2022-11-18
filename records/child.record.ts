@@ -34,18 +34,18 @@ export class ChildRecord {
     }
 
     static async listAll(): Promise<ChildRecord[]> {
-        const [results] = (await pool.execute("SELECT * FROM `children` ORDER BY `name` ASC")) as ;
+        const [results] = (await pool.execute("SELECT * FROM `children` ORDER BY `name` ASC")) as ChildRecordResults;
         return results.map(obj => new ChildRecord(obj));
     }
 
-    static async getOne(id) {
+    static async getOne(id: string): Promise<ChildRecord | null> {
         const [results] = await pool.execute("SELECT * FROM `children` WHERE `id` = :id", {
             id,
-        });
+        }) as ChildRecordResults;
         return results.length === 0 ? null : new ChildRecord(results[0]);
     }
 
-    async update() {
+    async update(): Promise<void> {
         await pool.execute("UPDATE `children` SET `name` = :name, `giftId` = :giftId WHERE `id` = :id", {
             id: this.id,
             name: this.name,
