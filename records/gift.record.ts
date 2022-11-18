@@ -1,10 +1,9 @@
 import {pool} from "../utils/db";
 import {ValidationError} from "../utils/errors";
 import {v4 as uuid} from "uuid";
-import {ChildRecord} from "./child.record";
 import {FieldPacket} from "mysql2";
 
-type GiftRecordResults = [ChildRecord[], FieldPacket[]];
+type GiftRecordResults = [GiftRecord[], FieldPacket[]];
 
 class GiftRecord {
     id?: string;
@@ -39,22 +38,22 @@ class GiftRecord {
         return this.id;
     }
 
-    static async listAll(): Promise<GiftRecord> {
-        const [results] = await pool.execute("SELECT * FROM `gifts`");
+    static async listAll(): Promise<GiftRecord[]> {
+        const [results] = (await pool.execute("SELECT * FROM `gifts`")) as GiftRecordResults;
         return results.map(obj => new GiftRecord(obj));
     }
 
-    static async getOne(id) {
+    static async getOne(id: string): Promise<GiftRecord | null> {
         const [results] = await pool.execute("SELECT * FROM `gifts` WHERE `id` = :id", {
             id,
-        });
+        }) as GiftRecordResults;
         return results.length === 0 ? null : new GiftRecord(results[0]);
     }
 
-    async countGivenGifts() {
+    async countGivenGifts(): Promise<number> {
         const [[{count}]] /* answer[0][0].count */ = await pool.execute("SELECT COUNT(*) AS `count` FROM `children` WHERE `giftId` = :id", {
             id: this.id,
-        });
+        }) as GiftRecordResults;
         return count;
     }
 }
