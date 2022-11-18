@@ -2,8 +2,14 @@ import {pool} from "../utils/db";
 import {ValidationError} from "../utils/errors";
 import {v4 as uuid} from "uuid";
 
+
+
 class GiftRecord {
-    constructor(obj) {
+    id?: string;
+    name: string;
+    count: number;
+
+    constructor(obj: GiftRecord) {
         if (!obj.name || obj.name.length < 3 || obj.name.length > 55) {
             throw new ValidationError('Nazwa prezentu musi mieć od 3 do 55 znaków.');
         }
@@ -17,7 +23,7 @@ class GiftRecord {
         this.count = obj.count;
     }
 
-    async insert() {
+    async insert(): Promise<string> {
         if (!this.id) {
             this.id = uuid();
         }
@@ -31,7 +37,7 @@ class GiftRecord {
         return this.id;
     }
 
-    static async listAll() {
+    static async listAll(): Promise<GiftRecord> {
         const [results] = await pool.execute("SELECT * FROM `gifts`");
         return results.map(obj => new GiftRecord(obj));
     }
