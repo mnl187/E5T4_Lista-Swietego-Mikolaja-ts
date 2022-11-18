@@ -1,6 +1,6 @@
-const {pool} = require("../utils/db");
-const {ValidationError} = require("../utils/errors");
-const {v4: uuid} = require('uuid');
+import {pool} from "../utils/db";
+import {ValidationError} from "../utils/errors";
+import {v4 as uuid} from "uuid";
 
 class GiftRecord {
     constructor(obj) {
