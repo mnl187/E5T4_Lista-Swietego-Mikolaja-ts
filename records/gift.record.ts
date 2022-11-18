@@ -1,8 +1,10 @@
 import {pool} from "../utils/db";
 import {ValidationError} from "../utils/errors";
 import {v4 as uuid} from "uuid";
+import {ChildRecord} from "./child.record";
+import {FieldPacket} from "mysql2";
 
-
+type GiftRecordResults = [ChildRecord[], FieldPacket[]];
 
 class GiftRecord {
     id?: string;
